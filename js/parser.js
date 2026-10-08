@@ -61,13 +61,17 @@
 
         if (!line) continue;
 
+        const boldMatch = line.match(/^\[!b:\$?([\s\S]*?)\$?\]$/i);
+        const contentLine = boldMatch ? boldMatch[1].trim() : line;
+
         // Skip top-level section headers like [!b:$PHẦN I: BỘ 60 CÂU HỎI$]
         if (/^\[!b:\$?(?:PHẦN|CHỦ ĐỀ|BỘ ĐỀ|BÀI TẬP)/i.test(line) && !qRegex.test(line)) {
           continue;
         }
 
         // Check if line starts a question
-        const qMatch = line.match(qRegex);
+        const questionLine = contentLine.replace(/^[•·]\s*/, '');
+        const qMatch = questionLine.match(qRegex);
         if (qMatch) {
           if (currentQuestion) {
             rawQuestions.push(currentQuestion);
@@ -94,9 +98,9 @@
           }
 
           // Check if option
-          const optMatch = line.match(optRegex);
+          const optMatch = contentLine.match(optRegex);
           if (optMatch) {
-            const isCorrect = optMatch[1] === '*';
+            const isCorrect = optMatch[1] === '*' || !!boldMatch;
             const letter = optMatch[2].toUpperCase();
             const optText = optMatch[3] ? optMatch[3].trim() : '';
 

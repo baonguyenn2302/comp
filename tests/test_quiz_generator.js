@@ -52,6 +52,22 @@ assertEquals(parsedVHM.duplicateCount, 120, 'VHM duplicates correctly identified
 assertEquals(parsedVKQ.validCount, 106, 'VKQ unique valid questions count');
 assertEquals(parsedVKQ.duplicateCount, 1, 'VKQ duplicate correctly caught and filtered out');
 
+const wrappedTopic = QuestionParser.parseTopicMarkdown([
+  '[!b:$• Câu 1: Câu hỏi được in đậm ở dạng tag$]',
+  'A. Phương án thứ nhất',
+  '[!b:$B. Đáp án đúng được in đậm$]',
+  'C. Phương án thứ ba',
+  'D. Phương án thứ tư',
+  '[!b:$• Câu 2: Câu hỏi tiếp theo$]',
+  '*A. Đáp án đúng',
+  'B. Phương án thứ hai',
+  'C. Phương án thứ ba',
+  'D. Phương án thứ tư',
+].join('\n'), 'wrapped', 'Wrapped topic');
+assertEquals(wrappedTopic.totalParsed, 2, 'Wrapped bold question headings start separate questions');
+assertEquals(wrappedTopic.validCount, 2, 'Wrapped bold question headings and choices are parsed as valid');
+assertEquals(wrappedTopic.validQuestions[0].origCorrectLetter, 'B', 'Bold-wrapped choice is recognized as correct');
+
 // Verify stable IDs
 const sampleQ = parsedVCX.validQuestions[0];
 assert(sampleQ.id.startsWith('vcx_q'), 'Question has stable ID format');
